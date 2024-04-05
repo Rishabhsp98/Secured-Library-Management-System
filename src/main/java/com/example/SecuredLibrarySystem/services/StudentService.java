@@ -4,6 +4,7 @@ import com.example.SecuredLibrarySystem.Utils.Constants;
 import com.example.SecuredLibrarySystem.dtos.CreateStudentRequest;
 import com.example.SecuredLibrarySystem.models.SecuredUser;
 import com.example.SecuredLibrarySystem.models.Student;
+import com.example.SecuredLibrarySystem.repositories.StudentCacheRepository;
 import com.example.SecuredLibrarySystem.repositories.StudentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,9 @@ public class StudentService {
     @Autowired
     UserService userService;
 
+    @Autowired
+    StudentCacheRepository studentCacheRepository;
+
     public void create(Student student) {
         logger.info("Student object, {}",student);
         SecuredUser securedUser = student.getSecuredUser();
@@ -35,6 +39,18 @@ public class StudentService {
     }
 
     public Student find(int studentId) {
+        //first we check in redis
+        Student student = studentCacheRepository.get(studentId);
+        if(student != null)
+            return student;
+
+        student = studentRepository.findById(studentId).orElse(null);
+
+        //first time searching ,so set in redis also
+        if(student != null)
+            studentCacheRepository.set(student);
+
+
         return studentRepository.findById(studentId).orElse(null);
     }
 

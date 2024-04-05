@@ -38,7 +38,7 @@ public class TransactionService {
     @Value("${student.allowed.duration}")
     Integer duration;
 
-    public String InitiateTxn(InitiateTransactionRequest initiateTransactionRequest) throws Exception {
+    public String InitiateTxn(InitiateTransactionRequest initiateTransactionRequest,Integer adminId) throws Exception {
         /**
          * Issuance
          * 1. If the book is available or not and student is valid or not
@@ -57,13 +57,13 @@ public class TransactionService {
          */
         // based on type of transaction we route to either issue or return
         return initiateTransactionRequest.getTransactionType() == TransactionType.ISSUE ?
-                issuance(initiateTransactionRequest) : returnBook(initiateTransactionRequest);
+                issuance(initiateTransactionRequest,adminId) : returnBook(initiateTransactionRequest,adminId);
 
     }
 
-    private String issuance(InitiateTransactionRequest initiateTransactionRequest) throws Exception {
+    private String issuance(InitiateTransactionRequest initiateTransactionRequest,Integer adminId) throws Exception {
         Student student = studentService.find(initiateTransactionRequest.getStudentId());
-        Admin admin = adminService.find(initiateTransactionRequest.getAdminId());
+        Admin admin = adminService.find(adminId);
         List<Book> bookList = bookService.find("id", String.valueOf(initiateTransactionRequest.getBookId()));
 
         Book book = bookList != null && bookList.size() > 0 ? bookList.get(0) : null;
@@ -104,7 +104,7 @@ public class TransactionService {
         return transaction.getTxnId();
     }
 
-    private String returnBook(InitiateTransactionRequest initiateTransactionRequest) throws Exception {
+    private String returnBook(InitiateTransactionRequest initiateTransactionRequest,Integer adminId) throws Exception {
 
         /**
          * Return
@@ -115,7 +115,7 @@ public class TransactionService {
          */
 
         Student student = studentService.find(initiateTransactionRequest.getStudentId());
-        Admin admin = adminService.find(initiateTransactionRequest.getAdminId());
+        Admin admin = adminService.find(adminId);
         List<Book> bookList = bookService.find("id", String.valueOf(initiateTransactionRequest.getBookId()));
 
         Book book = bookList != null && bookList.size() > 0 ? bookList.get(0) : null;
@@ -124,7 +124,7 @@ public class TransactionService {
                 || admin == null // admin is null
                 || book == null
                 || book.getStudent() == null  // if the book is assigned to someone or not
-                || book.getStudent().getId() != student.getId()) { // if the book is assigned to the same student
+                || !book.getStudent().getId().equals( student.getId())) { // if the book is assigned to the same student
             // which is requesting to return or not
             throw new Exception("Invalid request");
         }
@@ -193,11 +193,11 @@ public class TransactionService {
         return 0;
     }
 
-    public void PayFine(MakePaymentRequest makePaymentRequest) throws Exception {
+    public void PayFine(MakePaymentRequest makePaymentRequest,Integer studentId) throws Exception {
         Transactions returntransactions = transactionRepository.findByTxnId(String.valueOf(makePaymentRequest.getTransactionId()));
 
         Book book = returntransactions.getBook();   // extract the book mapped to this transaction
-        if(Objects.equals(returntransactions.getFine(), makePaymentRequest.getAmount()) && book.getStudent() != null && Objects.equals(book.getStudent().getId(), makePaymentRequest.getStudentId())){
+        if(Objects.equals(returntransactions.getFine(), makePaymentRequest.getAmount()) && book.getStudent() != null && Objects.equals(book.getStudent().getId(), studentId)){
             returntransactions.setTransactionStatus(TransactionStatus.SUCCESS);
             book.setStudent(null);
             bookService.createOrUpdate(book);

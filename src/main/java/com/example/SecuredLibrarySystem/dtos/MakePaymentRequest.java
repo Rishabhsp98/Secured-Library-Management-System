@@ -11,7 +11,5 @@ public class MakePaymentRequest {
 
     private Integer amount;
 
-    private Integer studentId;
-
     private String transactionId;
 }

@@ -8,6 +8,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.validation.*;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Admin {
+public class Admin implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

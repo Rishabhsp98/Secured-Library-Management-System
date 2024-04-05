@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.validation.*;
+
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
@@ -16,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Transactions {
+public class Transactions implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

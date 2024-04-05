@@ -12,12 +12,22 @@ public class Utils {
 
         Map<String,String> authorities = new HashMap<>();
 
-        List<String> studentAuthorities = Arrays.asList(Constants.STUDENT_SELF_INFO_AUTHORITY);
+        List<String> studentAuthorities = Arrays.asList
+                                        (
+                                                Constants.STUDENT_SELF_INFO_AUTHORITY,
+                                                Constants.READ_BOOK_AUTHORITY,
+                                                Constants.MAKE_PAYMENT_AUTHORITY
+                                        );
 
         List<String> adminAuthorities = Arrays.asList
                 (
                         Constants.STUDENT_INFO_AUTHORITY,
-                        Constants.CREATE_ADMIN_AUTHORITY
+                        Constants.CREATE_ADMIN_AUTHORITY,
+                        Constants.CREATE_BOOK_AUTHORITY,
+                        Constants.DELETE_BOOK_AUTHORITY,
+                        Constants.UPDATE_BOOK_AUTHORITY,
+                        Constants.READ_BOOK_AUTHORITY,
+                        Constants.INITIATE_TRANSACTION_AUTHORITY
                 );
 
         //converting List into String of authorities using delimeter

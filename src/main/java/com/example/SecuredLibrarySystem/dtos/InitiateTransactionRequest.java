@@ -20,8 +20,5 @@ public class InitiateTransactionRequest {
     private Integer studentId;
 
     @NotNull
-    private Integer adminId;
-
-    @NotNull
     private TransactionType transactionType;
 }
