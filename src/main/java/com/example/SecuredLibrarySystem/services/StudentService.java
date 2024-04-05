@@ -1,6 +1,8 @@
 package com.example.SecuredLibrarySystem.services;
 
+import com.example.SecuredLibrarySystem.Utils.Constants;
 import com.example.SecuredLibrarySystem.dtos.CreateStudentRequest;
+import com.example.SecuredLibrarySystem.models.SecuredUser;
 import com.example.SecuredLibrarySystem.models.Student;
 import com.example.SecuredLibrarySystem.repositories.StudentRepository;
 import org.slf4j.Logger;
@@ -12,12 +14,23 @@ import org.springframework.stereotype.Service;
 public class StudentService {
 
 
-    private static Logger logger = LoggerFactory.getLogger(StudentService.class);
+    private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
     @Autowired
     StudentRepository studentRepository;
 
+    @Autowired
+    UserService userService;
+
     public void create(Student student) {
         logger.info("Student object, {}",student);
+        SecuredUser securedUser = student.getSecuredUser();
+
+        //first save the secured user in securedUser db
+        securedUser = userService.saveUser(securedUser, Constants.STUDENT_USER);
+
+        // In student table , student having foreign key set to user (which comes from frontend, above one(line 27))
+        student.setSecuredUser(securedUser);
+
         studentRepository.save(student);
     }
 

@@ -31,6 +31,10 @@ public class Admin {
     @CreationTimestamp
     private Date CreatedOn;
 
+    @OneToOne
+    @JoinColumn
+    @JsonIgnoreProperties({"admin"}) // in secured User , ignore the property admin to avoid infinite loop
+    private SecuredUser securedUser;
 
     @OneToMany(mappedBy = "admin")
     @JsonIgnoreProperties({"admin"})

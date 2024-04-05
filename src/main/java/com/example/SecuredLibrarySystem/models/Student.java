@@ -36,6 +36,11 @@ public class Student {
     @UpdateTimestamp
     private Date updatedOn;
 
+    @OneToOne
+    @JoinColumn
+    @JsonIgnoreProperties({"student"}) // in secured User , ignore the property student to avoid infinite loop
+    private SecuredUser securedUser;
+
     @OneToMany(mappedBy = "student")
     @JsonIgnoreProperties({"student"})
     private List<Book> bookList;  // back reference
